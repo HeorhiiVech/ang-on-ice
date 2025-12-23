@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Угадайка Юри на Льду</title>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-pink: #f8bbd0;
+            --dark-pink: #f06292;
+            --ice-blue: #e1f5fe;
+            --glass: rgba(255, 255, 255, 0.9);
+        }
+
+        body {
+            font-family: 'Comfortaa', cursive;
+            background-image: linear-gradient(rgba(252, 228, 236, 0.4), rgba(225, 245, 254, 0.4)), 
+                              url('assets/images/fone.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #5d4037;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .bg-animations {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 0;
+        }
+
+        .falling-item {
+            position: absolute;
+            animation: fall 7s infinite linear;
+            opacity: 0;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        .container {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(240, 98, 146, 0.2);
+            width: 90%;
+            max-width: 550px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            border: 6px solid white;
+        }
+
+        h1 { 
+            font-family: 'Pacifico', cursive; 
+            color: var(--dark-pink); 
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px white;
+        }
+
+        .intro-text {
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-size: 16px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        .hidden { display: none !important; }
+
+        .settings-group {
+            margin-bottom: 25px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 15px;
+            border-radius: 20px;
+        }
+
+        label { display: block; margin-bottom: 10px; font-weight: bold; color: var(--dark-pink); }
+
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 20px;
+            border: 2px solid var(--main-pink);
+            box-sizing: border-box;
+            outline: none;
+            font-family: inherit;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .game-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .btn-nav {
+            padding: 10px 20px;
+            font-size: 14px;
+            border-radius: 20px;
+            background: white;
+            color: var(--dark-pink);
+            border: 2px solid var(--main-pink);
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button.main-btn {
+            background: linear-gradient(45deg, var(--main-pink), var(--dark-pink));
+            color: white; border: none; padding: 18px 45px;
+            border-radius: 35px; font-size: 20px; font-weight: bold;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(240, 98, 146, 0.3);
+        }
+
+        button.main-btn:hover { transform: scale(1.05); }
+
+        /* ИСПРАВЛЕННАЯ КАРТОЧКА */
+        .flip-card {
+            background-color: transparent;
+            width: 220px; height: 220px;
+            perspective: 1000px; 
+            margin: 25px auto;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%; height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card.is-flipped .flip-card-inner { 
+            transform: rotateY(180deg); 
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%; height: 100%;
+            backface-visibility: hidden;
+            border-radius: 50%;
+            border: 8px solid white;
+            box-shadow: 0 0 30px var(--main-pink);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+
+        .flip-card-front {
+            background: linear-gradient(45deg, var(--main-pink), #f48fb1);
+            color: white; font-size: 90px; font-weight: bold;
+            z-index: 2;
+        }
+
+        .flip-card-back {
+            background: white;
+            transform: rotateY(180deg);
+            z-index: 1;
+        }
+
+        .dual-image {
+            display: flex;
+            width: 100%; height: 100%;
+        }
+        
+        .dual-image div {
+            flex: 1;
+            background-size: cover;
+            background-position: center;
+            border-right: 2px solid white;
+        }
+
+        .dual-image div:last-child { border-right: none; }
+
+        .timer-info { display: flex; align-items: center; gap: 15px; margin: 20px 0; }
+        .timer-bar { flex-grow: 1; height: 16px; background: #fce4ec; border-radius: 12px; overflow: hidden; border: 2px solid white; }
+        .timer-fill { width: 100%; height: 100%; background: var(--dark-pink); transition: width 0.1s linear; }
+        #timer-text { font-weight: bold; color: var(--dark-pink); min-width: 35px; font-size: 18px; }
+
+        .status-info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 15px; color: #880e4f; font-weight: bold; }
+        .feedback { font-size: 18px; font-weight: bold; margin: 15px 0; min-height: 24px; }
+        .correct { color: #43a047; }
+        .wrong { color: #e53935; }
+    </style>
+</head>
+<body>
+
+    <div class="bg-animations" id="bg-container"></div>
+
+    <div class="container" id="main-screen">
+        <h1>Угадайка Юри на Льду ❄️</h1>
+        <div class="intro-text">
+            Прокачай свои навыки в <b>Юри на Льду!</b> <br><br>
+            ⛸️ <b>Любовь</b> — это твои очки которые ты зарабатываешь за каждый ран. <br>
+            <b>+10</b> очков за Персонажа и <b>+5</b> за правильную песню. <br><br>
+            <i>"Если продажа души — это все, что нужно для победы, то я отдам вам всё свое тело целиком"</i> <br>- Юрий Плисецкий
+        </div>
+        <button class="main-btn" onclick="goToSettings()">Войти ❤️</button>
+    </div>
+
+    <div class="container hidden" id="settings-screen">
+        <h1>Настройки ✨</h1>
+        <div class="settings-group">
+            <label>Количество мужей?</label>
+            <input type="number" id="setting-rounds" value="5" min="1" max="30">
+        </div>
+        <div class="settings-group">
+            <label>Время на угадывание (сек)</label>
+            <input type="number" id="setting-time-char" value="20">
+        </div>
+        <button class="main-btn" onclick="startGame()">На лёд! ⛸️</button>
+    </div>
+
+    <div class="container hidden" id="game-screen">
+        <div class="game-nav">
+            <button class="btn-nav" onclick="quitGame()">Главная</button>
+            <button class="btn-nav" onclick="restartRound()">Заново</button>
+        </div>
+
+        <div class="status-info">
+            <span id="round-counter">Раунд: 1/5</span>
+            <span id="score-counter">Любовь: 0 ❤️</span>
+        </div>
+
+        <h2 id="phase-title" style="color: #ad1457; margin: 0;">Кто выступает?</h2>
+        
+        <div class="timer-info">
+            <div class="timer-bar"><div id="timer-fill" class="timer-fill"></div></div>
+            <span id="timer-text">20</span>
+        </div>
+
+        <div class="flip-card" id="flip-card">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">?</div>
+                <div class="flip-card-back" id="char-image-container"></div>
+            </div>
+        </div>
+
+        <input type="text" id="answer-input" list="hints-list" placeholder="Введите имя..." autocomplete="off">
+        <datalist id="hints-list"></datalist>
+
+        <div id="feedback" class="feedback"></div>
+        <button id="submit-btn" class="main-btn" onclick="handleButtonClick()">Ответить</button>
+    </div>
+
+    <script>
+        const gameData = [
+            { charNames: ["Victor Nikiforov", "Виктор Никифоров", "Victor", "Виктор"], image: "Victor_Nikiforov.png", songs: [
+                { file: "The_Lilac_Fairy.mp3", names: ["The Lilac Fairy", "Фея Сирени"] },
+                { file: "Stay_Close_to_Me.mp3", names: ["Stay Close to Me", "Stay Close", "Побудь со мной"] }
+            ]},
+            { charNames: ["Yuuri Katsuki", "Юри Кацуки", "Yuuri", "Юри"], image: "Yuuri_Katsuki.png", songs: [
+                { file: "In_Regards_to_Love_Eros.mp3", names: ["Eros", "Эрос"] },
+                { file: "Yuri_on_ICE.mp3", names: ["Yuri on ICE", "Юри на льду"] },
+                { file: "Stay_Close_to_Me.mp3", names: ["Stay Close to Me", "Stay Close", "Побудь со мной"] }
+            ]},
+            { charNames: ["Yuri Plisetsky", "Юрий Плисецкий", "Yura", "Юра", "Yurio", "Юрио"], image: "Yuri_Plisetsky.png", songs: [
+                { file: "In_regards_to_love_Agape.mp3", names: ["Agape", "Агапе"] },
+                { file: "Allegro_appasionato.mp3", names: ["Allegro Appasionato", "Аллегро"] },
+                { file: "Welcome_to_The_Madness.mp3", names: ["Welcome to The Madness"] }
+            ]},
+            { charNames: ["Kenjirou Minami", "Кендзиро Минами", "Minami", "Минами"], image: "Kenjirou_Minami.png", songs: [{ file: "Minami's_Boogie.mp3", names: ["Minami's Boogie", "Буги Минами"] }]},
+            { charNames: ["Phichit Chulanont", "Пхичит Чуланонт", "Phichit", "Пхичит"], image: "Phichit_Chulanont.png", songs: [
+                { file: "Shall_We_Skate.mp3", names: ["Shall We Skate?", "Потанцуем"] },
+                { file: "Terra_Incognita.mp3", names: ["Terra Incognita", "Терра Инкогнита"] }
+            ]},
+            { charNames: ["Guang Hong Ji", "Гуан-Хонг Джи", "Guang Hong", "Гуан Хонг"], image: "Guang_Hong_Ji.png", songs: [
+                { file: "La_parfum_de_fleurs.mp3", names: ["La Parfum de Fleurs", "Аромат цветов"] },
+                { file: "The_Inferno.mp3", names: ["The Inferno", "Инферно"] }
+            ]},
+            { charNames: ["Georgi Popovich", "Георгий Попович", "Georgi", "Георгий"], image: "Georgi_Popovich.png", songs: [{ file: "A_Tales_of_Sleeping_Prince.mp3", names: ["A Tales of Sleeping Prince"] }]},
+            { charNames: ["Leo de la Iglesia", "Лео де ла Иглесиа", "Leo", "Лео"], image: "Leo_de_la_Iglesia.png", songs: [{ file: "Still_Alive.mp3", names: ["Still Alive"] }]},
+            { charNames: ["Christophe Giacometti", "Кристоф Джакометти", "Chris", "Крис"], image: "Christophe_Giacometti.png", songs: [
+                { file: "Intoxicated.mp3", names: ["Intoxicated", "Опьяненный"] },
+                { file: "Rapsodie_espagnole.mp3", names: ["Rapsodie espagnole"] }
+            ]},
+            { charNames: ["Seung-gil Lee", "Сынгыл Ли", "Seung-gil", "Сынгыл"], image: "Seung_gil_Lee.png", songs: [{ file: "Almavivo.mp3", names: ["Almavivo"] }]},
+            { charNames: ["Emil Nekola", "Эмиль Некола", "Emil", "Эмиль"], image: "Emil_Nekola.png", songs: [{ file: "Anastasis.mp3", names: ["Anastasis"] }]},
+            { charNames: ["Michele Crispino", "Мишеле Криспино", "Michele", "Микеле"], image: "Michele_Crispino.png", songs: [
+                { file: "L_homme_arme.mp3", names: ["L'homme Armé"] },
+                { file: "Serenade_for_Two.mp3", names: ["Serenade for Two"] }
+            ]},
+            { charNames: ["Jean-Jacques Leroy", "Жан-Жак Леруа", "JJ", "Джей-Джей"], image: "Jean_Jacques_Leroy.png", songs: [
+                { file: "Theme_of_King_J_J.mp3", names: ["Theme of King JJ"] },
+                { file: "Partizan_Hope.mp3", names: ["Partizan Hope"] }
+            ]},
+            { charNames: ["Otabek Altin", "Отабек Алтын", "Otabek", "Отабек"], image: "Otabek_Altin.png", songs: [
+                { file: "Samarkand_Overture.mp3", names: ["Samarkand Overture"] },
+                { file: "Movement _Advent.mp3", names: ["Symphony No. 9", "Movement Advent"] },
+                { file: "Welcome_to_The_Madness.mp3", names: ["Welcome to The Madness"] }
+            ]}
+        ];
+
+        let currentPlaylist = [];
+        let currentRoundIndex = 0;
+        let score = 0;
+        let timerSeconds = 20;
+        let timeLeft = 0;
+        let timerInterval = null;
+        let audio = new Audio();
+        let currentPhase = 'char';
+
+        const mainScreen = document.getElementById('main-screen');
+        const settingsScreen = document.getElementById('settings-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const timerFill = document.getElementById('timer-fill');
+        const timerText = document.getElementById('timer-text');
+        const answerInput = document.getElementById('answer-input');
+        const hintsList = document.getElementById('hints-list');
+        const feedback = document.getElementById('feedback');
+        const flipCard = document.getElementById('flip-card');
+        const charImageContainer = document.getElementById('char-image-container');
+
+        function createBackgroundEffects() {
+            const container = document.getElementById('bg-container');
+            const items = ['❤️', '❄️', '✨'];
+            for (let i = 0; i < 35; i++) {
+                const span = document.createElement('span');
+                span.className = 'falling-item';
+                span.innerHTML = items[Math.floor(Math.random() * items.length)];
+                span.style.left = Math.random() * 100 + 'vw';
+                span.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                container.appendChild(span);
+            }
+        }
+        createBackgroundEffects();
+
+        function goToSettings() {
+            mainScreen.classList.add('hidden');
+            settingsScreen.classList.remove('hidden');
+        }
+
+        function quitGame() {
+            audio.pause();
+            clearInterval(timerInterval);
+            gameScreen.classList.add('hidden');
+            mainScreen.classList.remove('hidden');
+        }
+
+        function restartRound() {
+            audio.currentTime = 0;
+            loadRound();
+        }
+
+        function startGame() {
+            const roundsNum = parseInt(document.getElementById('setting-rounds').value);
+            timerSeconds = parseInt(document.getElementById('setting-time-char').value);
+            let allSongs = [];
+            gameData.forEach(char => {
+                char.songs.forEach(song => { allSongs.push({ charInfo: char, songInfo: song }); });
+            });
+            allSongs.sort(() => 0.5 - Math.random());
+            currentPlaylist = allSongs.slice(0, roundsNum);
+            currentRoundIndex = 0;
+            score = 0;
+            settingsScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            loadRound();
+        }
+
+        function updateHints(type) {
+            hintsList.innerHTML = "";
+            let items = [];
+            if (type === 'char') {
+                gameData.forEach(char => { items.push(char.charNames[0]); items.push(char.charNames[1]); });
+            } else {
+                gameData.forEach(char => { char.songs.forEach(song => { song.names.forEach(name => items.push(name)); }); });
+            }
+            [...new Set(items)].forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                hintsList.appendChild(option);
+            });
+        }
+
+        function loadRound() {
+            if (currentRoundIndex >= currentPlaylist.length) { endGame(); return; }
+            currentPhase = 'char';
+            updateHints('char');
+            timeLeft = timerSeconds;
+            answerInput.value = "";
+            answerInput.placeholder = "Имя фигуриста...";
+            answerInput.disabled = false;
+            feedback.textContent = "";
+            
+            // СБРОС КАРТОЧКИ ПЕРЕД НОВЫМ РАУНДОМ
+            flipCard.classList.remove('is-flipped');
+            charImageContainer.innerHTML = ""; 
+
+            document.getElementById('round-counter').textContent = "Раунд: " + (currentRoundIndex + 1) + "/" + currentPlaylist.length;
+            document.getElementById('score-counter').textContent = "Любовь: " + score + " ❤️";
+            document.getElementById('phase-title').textContent = "Кто выступает?";
+
+            const round = currentPlaylist[currentRoundIndex];
+            audio.src = "assets/audio/" + round.songInfo.file;
+            audio.play();
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(function() {
+                timeLeft -= 0.1;
+                if (timeLeft < 0) timeLeft = 0;
+                const maxTime = (currentPhase === 'char') ? timerSeconds : 10;
+                timerFill.style.width = (timeLeft / maxTime) * 100 + "%";
+                timerText.textContent = Math.ceil(timeLeft);
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    if (currentPhase === 'char') revealCharacter(false);
+                    else nextRound();
+                }
+            }, 100);
+        }
+
+        function handleButtonClick() { if (currentPhase === 'char' || currentPhase === 'song') checkAnswer(); }
+
+        function checkAnswer() {
+            const userVal = answerInput.value.toLowerCase().trim();
+            const round = currentPlaylist[currentRoundIndex];
+            if (currentPhase === 'char') {
+                const performers = gameData.filter(c => c.songs.some(s => s.file === round.songInfo.file));
+                const isCorrect = performers.some(c => c.charNames.some(n => n.toLowerCase() === userVal));
+                if (isCorrect) { score += 10; revealCharacter(true); }
+                else revealCharacter(false);
+            } else {
+                const isCorrect = round.songInfo.names.some(n => n.toLowerCase() === userVal);
+                if (isCorrect) { score += 5; feedback.textContent = "Верно! +5 ❤️"; feedback.className = "feedback correct"; }
+                else { feedback.textContent = "Это: " + round.songInfo.names[0]; feedback.className = "feedback wrong"; }
+                answerInput.disabled = true;
+                setTimeout(nextRound, 2500);
+            }
+        }
+
+        function revealCharacter(wasCorrect) {
+            clearInterval(timerInterval);
+            const round = currentPlaylist[currentRoundIndex];
+            const performers = gameData.filter(c => c.songs.some(s => s.file === round.songInfo.file));
+            
+            // СНАЧАЛА ПОДГОТОВИМ КОНТЕНТ НА ЗАДНЕЙ СТОРОНЕ
+            if (performers.length > 1) {
+                charImageContainer.innerHTML = `
+                    <div class="dual-image">
+                        <div style="background-image: url('assets/images/${performers[0].image}')"></div>
+                        <div style="background-image: url('assets/images/${performers[1].image}')"></div>
+                    </div>
+                `;
+                feedback.textContent = wasCorrect ? `Да! Это ${performers[0].charNames[3]} и ${performers[1].charNames[3]}!` : `Это были ${performers[0].charNames[3]} и ${performers[1].charNames[3]}`;
+            } else {
+                charImageContainer.innerHTML = `<div style="width:100%; height:100%; background-size:cover; background-position:center; background-image: url('assets/images/${performers[0].image}')"></div>`;
+                feedback.textContent = wasCorrect ? `Верно! Это ${performers[0].charNames[1]}!` : `Увы, это ${performers[0].charNames[1]}`;
+            }
+
+            feedback.className = wasCorrect ? "feedback correct" : "feedback wrong";
+            
+            // ПЕРЕВОРАЧИВАЕМ КАРТОЧКУ (она останется перевернутой до конца раунда)
+            flipCard.classList.add('is-flipped');
+
+            // ПЕРЕХОД КО ВТОРОЙ ФАЗЕ
+            setTimeout(() => {
+                currentPhase = 'song';
+                updateHints('song');
+                document.getElementById('phase-title').textContent = "Название мелодии?";
+                answerInput.value = "";
+                answerInput.placeholder = "Название мелодии...";
+                timeLeft = 10;
+                startTimer();
+            }, 2500);
+        }
+
+        function nextRound() { currentRoundIndex++; loadRound(); }
+
+        function endGame() {
+            audio.pause();
+            gameScreen.innerHTML = `<h1>Финал!</h1><p>Ваша Любовь: ${score} ❤️</p><button class="main-btn" onclick="location.reload()">Заново</button>`;
+        }
+
+        answerInput.addEventListener("keyup", (e) => { if (e.key === "Enter") handleButtonClick(); });
+    </script>
+</body>
+</html>
